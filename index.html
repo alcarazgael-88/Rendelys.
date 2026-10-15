@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rendelys — Analyse immobilière</title>
+<style>
+:root{--bg:#f3f5f7;--sf:#fff;--tx:#17212b;--mu:#66727f;--ln:#dde3e8;--ac:#0f8f7e;--ac2:#e8f5f2;--bad:#c0392b;--warn:#b7791f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#10171e;--sf:#17212b;--tx:#e9eef2;--mu:#93a1ae;--ln:#2a3846;--ac:#3fc4ad;--ac2:#14322f;--bad:#ff7b6b;--warn:#e7b04a}}
+:root[data-theme=dark]{--bg:#10171e;--sf:#17212b;--tx:#e9eef2;--mu:#93a1ae;--ln:#2a3846;--ac:#3fc4ad;--ac2:#14322f;--bad:#ff7b6b;--warn:#e7b04a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--sf);border-bottom:1px solid var(--ln)}
+.brand{display:flex;align-items:center;gap:10px;padding:12px 16px 6px;font-weight:700;font-size:18px}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:15px}
+nav{display:flex;gap:4px;overflow-x:auto;padding:0 10px 8px}
+nav button{flex:none;border:0;background:none;color:var(--mu);padding:8px 12px;border-radius:999px;font:inherit;font-weight:600;cursor:pointer}
+nav button.on{background:var(--ac2);color:var(--ac)}
+main{max-width:860px;margin:0 auto;padding:16px 14px 60px}
+h1{font-size:24px;margin:4px 0}h2{font-size:17px;margin:22px 0 8px}p.sub{color:var(--mu);margin:0 0 14px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi small{color:var(--mu);display:block}.kpi b{font-size:21px}.kpi i{font-style:normal;color:var(--mu);font-size:12px}
+label{display:block;font-size:13px;color:var(--mu);font-weight:600;margin:8px 0 3px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.btn{border:0;background:var(--ac);color:#fff;font:inherit;font-weight:700;padding:11px 16px;border-radius:10px;cursor:pointer;margin:10px 8px 0 0}
+.btn.alt{background:var(--ac2);color:var(--ac)}.btn.del{background:none;color:var(--bad);padding:4px 8px;margin:0}
+.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--ln);text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}
+tr.sec td{background:var(--ac2);color:var(--ac);font-weight:700;text-align:left}tr.tot td{font-weight:700}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--ac2);color:var(--ac);font-size:12px;font-weight:700}
+.v{font-size:22px;font-weight:800}.go{color:var(--ac)}.mid{color:var(--warn)}.no{color:var(--bad)}
+.note{color:var(--mu);font-size:13px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--ln);padding:9px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+pre{white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--ln);font-size:13px}
+section{display:none}section.on{display:block}
+a{color:var(--ac)}
+</style></head><body>
+<header><div class="brand"><span class="logo">R</span>Rendelys</div>
+<nav id="nav"></nav></header>
+<main>
+
+<section id="villes"><h1>Analyse de commune</h1>
+<p class="sub">Marché, population et ressources locales. Périmètre : 1 h autour de Saint-Savournin.</p>
+<div class="card"><label for="com">Commune</label><select id="com"></select>
+<div class="note" id="src" style="margin-top:8px"></div></div>
+<div class="grid" id="kpis"></div>
+<div class="card" style="margin-top:12px"><b>Cœur de cible recommandé</b>
+<p id="cible" style="margin:6px 0 0"></p></div>
+<h2>Données de la commune</h2>
+<div class="card"><p class="note" style="margin-top:0">Saisis les chiffres issus de l'INSEE et de DVF. Ils restent sur cet appareil.</p>
+<div class="two"><div><label>Population</label><input id="d_pop" type="number"></div><div><label>Résidences principales (%)</label><input id="d_rp" type="number" step="0.1"></div>
+<div><label>Propriétaires occupants (%)</label><input id="d_po" type="number" step="0.1"></div><div><label>Logements vacants (%)</label><input id="d_vac" type="number" step="0.1"></div>
+<div><label>Niveau de vie médian (€)</label><input id="d_nv" type="number"></div><div><label>Prix médian (€/m²)</label><input id="d_pm" type="number"></div></div>
+<button class="btn" id="saveCom">Enregistrer la commune</button></div>
+<h2>Transactions DVF</h2>
+<div class="card"><p class="note" style="margin-top:0">Importe le fichier CSV de la commune (DVF géolocalisé, data.gouv.fr). Plusieurs années possibles. Seules les ventes simples d'un appartement ou d'une maison sont retenues.</p>
+<button class="btn" id="dvfAuto" style="margin-top:0">Charger depuis DVF</button><button class="btn alt" id="dvfAll" style="margin-top:0">Tout charger</button><div class="note" id="dvfStatus"></div>
+<input id="dvfFile" type="file" accept=".csv,text/csv" multiple>
+<a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres-geolocalisees/" target="_blank" rel="noopener">Télécharger les fichiers DVF</a>
+<div id="dvfInfo" style="margin-top:10px"></div></div>
+<h2>Ressources</h2>
+<div class="card">
+<div class="row"><span>Cadastre et PLU</span><a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank" rel="noopener">Géoportail</a></div>
+<div class="row"><span>Transactions</span><a href="https://app.dvf.etalab.gouv.fr/" target="_blank" rel="noopener">Explorer DVF</a></div>
+<div class="row" style="border:0"><span>Liens à contrôler avant usage</span></div></div></section>
+
+<section id="annonce"><h1>Fiche décisionnelle</h1>
+<p class="sub">Objectif minimal : +20 % avant fiscalité.</p>
+<div class="card"><div class="two">
+<div><label>Prix d'achat (€)</label><input id="f_ach" type="number" value="250000"></div><div><label>Revente estimée (€)</label><input id="f_rev" type="number" value="380000"></div>
+<div><label>Travaux (€)</label><input id="f_trv" type="number" value="60000"></div><div><label>Autres coûts / portage (€)</label><input id="f_aut" type="number" value="8000"></div>
+<div><label>Acquisition / notaire (%)</label><input id="f_acq" type="number" value="8"></div><div><label>Commercialisation (%)</label><input id="f_com" type="number" value="3"></div>
+<div><label>Fiscalité estimée (%)</label><input id="f_fis" type="number" value="25"></div>
+<div><label>Confiance des hypothèses</label><select id="f_conf"><option>Fragile</option><option selected>Correcte</option><option>Solide</option></select></div></div>
+<button class="btn" id="calc">Calculer la décision</button></div>
+<div class="card" id="verdict"><span class="note">Renseigne les hypothèses puis calcule.</span></div></section>
+
+<section id="vacants"><h1>Logements vacants</h1>
+<p class="sub">Potentiel de prospection par commune.</p>
+<div class="card" id="vacList"></div>
+<p class="note">Ces statistiques n'indiquent aucune adresse ni durée de vacance individuelle. Le fichier LOVAC n'est pas accessible publiquement.</p></section>
+
+<section id="classement"><h1>Classement</h1><p class="sub">Top 5 achat-revente selon le prix testé.</p>
+<div class="card"><div class="two"><div><label>Prix d'achat testé (€/m²)</label><input id="rk_ach" type="number" value="3000"></div><div><label>Travaux (€/m²)</label><input id="rk_trv" type="number" value="700"></div></div>
+<label>Type de bien</label><select id="rk_ft"><option>Tous</option><option>Appartement</option><option>Maison</option></select></div>
+<div class="card scroll"><table id="rkTab"></table></div>
+<p class="note">Le classement mesure l'attractivité du marché (transactions, population, niveau de vie, vacance). La marge est une simulation séparée : elle ne prouve jamais la rentabilité d'un bien précis.</p></section>
+<section id="cadastre"><h1>Cadastre</h1><p class="sub">Préparer la demande d'extrait de matrice cadastrale (Cerfa 6815-EM-SD).</p>
+<div class="card"><label>Nom et prénom</label><input id="c_nom"><label>Adresse du demandeur</label><input id="c_adr">
+<label>Courriel</label><input id="c_mail" type="email"><div class="two"><div><label>Section cadastrale</label><input id="c_sec"></div><div><label>N° de parcelle</label><input id="c_par"></div></div>
+<label>Objet de la demande</label><select id="c_obj"><option>Extrait de matrice cadastrale</option><option>Identification du propriétaire</option><option>Renseignements sur la parcelle</option></select>
+<button class="btn" id="cPrev">Prévisualiser</button><button class="btn alt" id="cDl">Télécharger le brouillon</button></div>
+<pre id="cOut" hidden></pre>
+<div class="card"><b>Transmettre au bon service</b><p class="note">Une demande porte sur une seule commune (un seul arrondissement pour Marseille).</p>
+<a href="https://lannuaire.service-public.fr/navigation/sip" target="_blank" rel="noopener">Trouver le service compétent</a> ·
+<a href="https://www.impots.gouv.fr/formulaire/6815-em-sd/demande-dextrait-de-matrice-cadastrale" target="_blank" rel="noopener">Cerfa officiel</a></div></section>
+
+<section id="mdb"><h1>Simulateur de marge</h1><p class="sub">Bilan prévisionnel, toutes valeurs TTC.</p>
+<div class="card"><div class="two">
+<div><label>Surface (m²)</label><input class="s" id="s_surf" type="number" value="80"></div><div><label>Prix d'achat (€)</label><input class="s" id="s_ach" type="number" value="250000"></div>
+<div><label>Revente (€/m²)</label><input class="s" id="s_pm" type="number" value="4500"></div><div><label>Rénovation intérieure (€)</label><input class="s" id="s_int" type="number" value="45000"></div>
+<div><label>Travaux extérieurs (€)</label><input class="s" id="s_ext" type="number" value="8000"></div><div><label>Architecte / MOE (%)</label><input class="s" id="s_moe" type="number" value="6"></div>
+<div><label>Assurances / DO (€)</label><input class="s" id="s_ass" type="number" value="3500"></div><div><label>Aléas travaux (%)</label><input class="s" id="s_ale" type="number" value="10"></div>
+<div><label>Commercialisation (% CA)</label><input class="s" id="s_com" type="number" value="3"></div><div><label>Enregistrement + garantie (%)</label><input class="s" id="s_enr" type="number" value="8"></div>
+<div><label>Charges non récupérables (€)</label><input class="s" id="s_chg" type="number" value="3000"></div><div><label>Juridique et comptable (€)</label><input class="s" id="s_jur" type="number" value="2500"></div>
+<div><label>Frais financiers (€)</label><input class="s" id="s_fin" type="number" value="6000"></div><div><label>Fiscalité (%)</label><input class="s" id="s_fis" type="number" value="25"></div></div>
+<p class="note">Pessimiste : revente −8 %, travaux +15 %. Optimiste : revente +8 %, travaux −5 %.</p></div>
+<div class="card scroll"><table id="bilan"></table></div></section>
+
+<section id="dossiers"><h1>Dossiers</h1><p class="sub">Stockés uniquement sur cet appareil.</p>
+<div class="card"><label>Adresse du bien</label><input id="k_adr"><label>Statut</label><select id="k_st"></select>
+<label>Prochaine action</label><input id="k_next"><label>Type de document</label><select id="k_type"></select>
+<label>Fichier (max 700 Ko)</label><input id="k_file" type="file">
+<button class="btn" id="kSave">Enregistrer le dossier</button></div>
+<div id="kList"></div>
+<div class="card"><button class="btn alt" id="exp" style="margin:0">Exporter toutes mes données</button>
+<p class="note">Le stockage du navigateur peut être effacé : exporte régulièrement tes pièces importantes.</p></div></section>
+
+<section id="reseau"><h1>Réseau professionnel</h1><p class="sub">Notaires, artisans, agents, banquiers.</p>
+<div class="card"><label>Nom</label><input id="r_nom"><label>Métier</label><select id="r_met"><option>Notaire</option><option>Artisan</option><option>Agent immobilier</option><option>Banquier / courtier</option><option>Architecte</option><option>Autre</option></select>
+<label>Téléphone ou courriel</label><input id="r_ct"><button class="btn" id="rAdd">Ajouter le contact</button></div>
+<div id="rList"></div></section>
+</main>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert("Stockage plein ou indisponible.")}}};
+const eur=n=>isFinite(n)?Math.round(n).toLocaleString("fr-FR")+" €":"—";
+const pct=n=>isFinite(n)?(n*100).toFixed(1).replace(".",",")+" %":"—";
+const tabs=[["villes","Villes"],["annonce","Annonce"],["classement","Classement"],["vacants","Vacants"],["cadastre","Cadastre"],["mdb","Simulateur"],["dossiers","Dossiers"],["reseau","Réseau"]];
+$("#nav").innerHTML=tabs.map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join("");
+function show(t){$$("section").forEach(s=>s.classList.toggle("on",s.id===t));$$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));scrollTo(0,0)}
+$("#nav").onclick=e=>{if(e.target.dataset.t)show(e.target.dataset.t)};show("villes");
+
+/* Communes */
+const villes=["Aubagne","Auriol","Trets","Saint-Maximin-la-Sainte-Baume","Brignoles","Nans-les-Pins","Saint-Savournin","Cadolive","Peypin","La Bouilladisse","La Destrousse","Roquevaire","Belcodène","Allauch","Plan-de-Cuques","Marseille","Gémenos","Cuges-les-Pins","Carnoux-en-Provence","Cassis","La Ciotat","Saint-Zacharie","Rousset","Fuveau","Gréasque","Mimet","Gardanne","Bouc-Bel-Air","Cabriès","Aix-en-Provence","Vitrolles","Marignane","Le Beausset","Bandol","Sanary-sur-Mer"];
+let data=store.get("rd_com",{Aubagne:{pop:47529,rp:92.2,po:49.5,vac:6.6,nv:24970,pm:0}});
+$("#com").innerHTML=villes.map(v=>`<option>${v}</option>`).join("");
+const F={pop:"d_pop",rp:"d_rp",po:"d_po",vac:"d_vac",nv:"d_nv",pm:"d_pm"};
+function renderCom(){const v=$("#com").value,d=data[v]||{};
+ for(const k in F)$("#"+F[k]).value=d[k]??"";
+ const has=d.pop!=null;
+ $("#src").textContent=has?"Chiffres saisis · INSEE RP 2023 pour Aubagne":"Aucune donnée saisie pour cette commune.";
+ const K=(l,val,s)=>`<div class="card kpi"><small>${l}</small><b>${val}</b><br><i>${s}</i></div>`;
+ $("#kpis").innerHTML=has?K("Population",d.pop.toLocaleString("fr-FR"),"INSEE")+K("Résidences principales",d.rp+" %","INSEE RP")+K("Propriétaires occupants",d.po+" %","des résidences principales")+K("Niveau de vie médian",eur(d.nv),"par an")+K("Logements vacants",d.vac+" %","INSEE RP")+K("Prix médian",d.pm?eur(d.pm)+"/m²":"—","DVF"):`<div class="card note">Complète les données ci-dessous pour afficher l'analyse.</div>`;
+ let c="Renseigne la population et la part de propriétaires.";
+ if(has){c=d.pop>20000?"T2 et T3 urbains. Marché important, bonne liquidité.":d.pop>5000?"T3 et petites maisons. Marché de taille moyenne : vérifie les délais de vente.":"Maisons et T3 familiaux. Marché étroit : prudence sur la liquidité.";if(d.po>55)c+=" Forte part de propriétaires occupants : parc plus rarement mis en vente.";}
+ $("#cible").textContent=c}
+$("#com").onchange=renderCom;
+$("#saveCom").onclick=()=>{const v=$("#com").value,d={};for(const k in F){const x=$("#"+F[k]).value;d[k]=x===""?null:+x}data[v]=d;store.set("rd_com",data);renderCom();renderVac()};
+function renderVac(){const rows=Object.entries(data).filter(([,d])=>d.pop!=null&&d.vac!=null).map(([v,d])=>({v,est:Math.round(d.pop/2.2*d.vac/100),vac:d.vac}));
+ $("#vacList").innerHTML=rows.length?rows.sort((a,b)=>b.est-a.est).map(r=>`<div class="row"><span><b>${r.v}</b><br><span class="note">Taux ${r.vac} %</span></span><span class="pill">≈ ${r.est.toLocaleString("fr-FR")} logements</span></div>`).join("")+`<p class="note">Estimation : population ÷ 2,2 personnes par logement × taux de vacance.</p>`:`<span class="note">Enregistre les données d'une commune dans l'onglet Villes.</span>`}
+renderCom();renderVac();
+
+/* DVF */
+let dvf=store.get("rd_dvf",{});
+const med=a=>{if(!a.length)return null;a=[...a].sort((x,y)=>x-y);const m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2};
+const qt=(a,p)=>{a=[...a].sort((x,y)=>x-y);return a[Math.min(a.length-1,Math.floor(p*a.length))]};
+function csvRows(t){const o=[];let r=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}else if(c=='"')q=true;else if(c==","){r.push(f);f=""}else if(c=="\n"){r.push(f);o.push(r);r=[];f=""}else if(c!="\r")f+=c}if(f||r.length){r.push(f);o.push(r)}return o}
+function parseDvf(txt){const r=csvRows(txt),h=r[0]||[],ix={};h.forEach((n,i)=>ix[n]=i);
+ if(ix.id_mutation==null||ix.valeur_fonciere==null)return null;
+ const g={};for(let i=1;i<r.length;i++){const x=r[i];if(x.length<h.length-2)continue;(g[x[ix.id_mutation]]=g[x[ix.id_mutation]]||[]).push(x)}
+ const res=[];for(const id in g){const rows=g[id];if(rows[0][ix.nature_mutation]!=="Vente")continue;
+  const loc=rows.filter(x=>x[ix.type_local]==="Appartement"||x[ix.type_local]==="Maison");
+  if(!loc.length||new Set(loc.map(x=>x[ix.type_local]+"|"+x[ix.surface_reelle_bati])).size!==1)continue;
+  const l=loc[0],p=+l[ix.valeur_fonciere],s=+l[ix.surface_reelle_bati];
+  if(!(p>0)||!(s>9))continue;const m=p/s;if(m<500||m>20000)continue;
+  res.push({id,d:l[ix.date_mutation],t:l[ix.type_local],s,p,m:Math.round(m)})}
+ return res}
+function renderDvf(){const v=$("#com").value,x=dvf[v];
+ if(!x||!x.rows.length){$("#dvfInfo").innerHTML='<span class="note">Aucune transaction importée pour cette commune.</span>';return}
+ const m=x.rows.map(r=>r.m),conf=m.length>=30?"Solide":m.length>=10?"Correcte":"Fragile";
+ const K=(l,a)=>`<div class="card kpi" style="margin:0"><small>${l}</small><b>${a}</b></div>`;
+ $("#dvfInfo").innerHTML=`<div class="grid">${K("Médiane",eur(med(m))+"/m²")}${K("Références",m.length)}${K("Fourchette centrale",eur(qt(m,.25))+" – "+eur(qt(m,.75)))}${K("Qualité",conf)}</div>
+ <div class="scroll" style="margin-top:10px"><table><tr><th>Date</th><th>Type</th><th>Surface</th><th>Prix</th><th>€/m²</th></tr>${[...x.rows].sort((a,b)=>b.d.localeCompare(a.d)).slice(0,15).map(r=>`<tr><td>${esc(r.d)}</td><td>${esc(r.t)}</td><td>${r.s} m²</td><td>${eur(r.p)}</td><td>${eur(r.m)}</td></tr>`).join("")}</table></div>
+ <p class="note">Mutations multiples, valeurs extrêmes et biens sans surface exploitable exclus.</p><button class="btn del" id="dvfClr">Effacer les transactions</button>`;
+ $("#dvfClr").onclick=()=>{delete dvf[v];store.set("rd_dvf",dvf);renderDvf();rank()}}
+$("#dvfFile").onchange=async e=>{const v=$("#com").value,old=(dvf[v]&&dvf[v].rows)||[],seen=new Set(old.map(x=>x.id));let all=[...old],bad=0;
+ for(const f of e.target.files){let r=null;try{r=parseDvf(await f.text())}catch(er){}if(!r){bad++;continue}for(const x of r)if(!seen.has(x.id)){seen.add(x.id);all.push(x)}}
+ all=all.sort((a,b)=>b.d.localeCompare(a.d)).slice(0,3000);
+ if(all.length){dvf[v]={rows:all};data[v]=Object.assign({pop:null,rp:null,po:null,vac:null,nv:null,pm:null},data[v]||{});data[v].pm=Math.round(med(all.map(r=>r.m)));store.set("rd_dvf",dvf);store.set("rd_com",data);renderCom();renderVac()}
+ if(bad)alert(bad+" fichier(s) illisible(s) : utilise le CSV DVF géolocalisé.");
+ e.target.value="";renderDvf();rank()};
+/* Classement */
+function rank(){const ach=+$("#rk_ach").value||0,trv=+$("#rk_trv").value||0,ft=$("#rk_ft").value;
+ const L=villes.map(v=>{const d=data[v]||{},rows=((dvf[v]&&dvf[v].rows)||[]).filter(x=>ft==="Tous"||x.t===ft),m=rows.length?med(rows.map(x=>x.m)):d.pm;return m?{v,d,n:rows.length,m}:null}).filter(Boolean);
+ if(!L.length){$("#rkTab").innerHTML='<tr><td class="note">Importe des transactions DVF ou saisis un prix médian dans l\'onglet Villes.</td></tr>';return}
+ const nm=get=>{const a=L.map(get).filter(x=>x!=null),lo=Math.min(...a),hi=Math.max(...a);return(x,inv)=>x==null||hi===lo?.5:(inv?hi-x:x-lo)/(hi-lo)};
+ const fn=nm(c=>c.n),fp=nm(c=>c.d.pop),fv=nm(c=>c.d.nv),fa=nm(c=>c.d.vac);
+ L.forEach(c=>{c.sc=Math.round(100*(.4*fn(c.n)+.25*fp(c.d.pop)+.2*fv(c.d.nv)+.15*fa(c.d.vac,true)));
+  const net=c.m*.97,cost=ach*1.08+trv;c.mg=cost?(net-cost)/cost:0;c.max=(net/1.2-trv)/1.08;
+  c.cf=c.n>=30?"Solide":c.n>=10?"Correcte":"Fragile";c.rs=c.n<10?"Peu de ventes":c.mg<.1?"Marge fine":"Standard"});
+ L.sort((a,b)=>b.sc-a.sc);
+ $("#rkTab").innerHTML=`<tr><th>Rang</th><th>Commune</th><th>Attractivité</th><th>Marge</th><th>Prix maxi (+20 %)</th><th>Confiance</th><th>Risque</th></tr>`+L.slice(0,5).map((c,i)=>`<tr><td>${i+1}</td><td>${esc(c.v)}</td><td>${c.sc}/100</td><td class="${c.mg<.1?"no":c.mg<.2?"mid":"go"}">${pct(c.mg)}</td><td>${eur(c.max)}/m²</td><td>${c.cf}</td><td>${c.rs}</td></tr>`).join("")}
+["#rk_ach","#rk_trv","#rk_ft","#saveCom"].forEach(s=>$(s).addEventListener(s==="#saveCom"?"click":"input",rank));
+$("#com").addEventListener("change",renderDvf);renderDvf();rank();
+
+/* Fiche décisionnelle */
+$("#calc").onclick=()=>{const g=i=>+$("#"+i).value||0;
+ const ach=g("f_ach"),rev=g("f_rev"),trv=g("f_trv"),aut=g("f_aut"),acq=g("f_acq")/100,com=g("f_com")/100,fis=g("f_fis")/100;
+ const cout=ach*(1+acq)+trv+aut,net=rev*(1-com),marge=net-cout,tx=cout?marge/cout:0,mnet=marge>0?marge*(1-fis):marge;
+ const maxo=(net/1.2-trv-aut)/(1+acq),conf=$("#f_conf").value;
+ let v="NO GO",cl="no",act="Renégocier le prix ou revoir le projet.";
+ if(tx>=.2&&conf!=="Fragile"){v="GO";cl="go";act="Préparer l'offre et valider les devis travaux."}
+ else if(tx>=.2){v="À CONSOLIDER";cl="mid";act="Marge suffisante mais hypothèses fragiles : fais chiffrer les travaux."}
+ else if(tx>=.1){v="À NÉGOCIER";cl="mid";act="Viser une offre à "+eur(maxo)+" maximum."}
+ $("#verdict").innerHTML=`<div class="v ${cl}">${v}</div><div class="row"><span>Coût total</span><b>${eur(cout)}</b></div><div class="row"><span>Marge avant fiscalité</span><b>${eur(marge)} (${pct(tx)})</b></div><div class="row"><span>Marge nette estimée</span><b>${eur(mnet)}</b></div><div class="row"><span>Offre maximale pour +20 %</span><b>${eur(maxo)}</b></div><div class="row"><span>Confiance</span><b>${conf}</b></div><p><b>Prochaine action :</b> ${act}</p><p class="note">Estimation locale. Validation comptable, juridique et technique indispensable.</p>`};
+
+/* Simulateur */
+function bilan(){const g=i=>+$("#s_"+i).value||0;
+ const sc=[["Pessimiste",.92,1.15],["Réaliste",1,1],["Optimiste",1.08,.95]];
+ const R=sc.map(([n,fr,ft])=>{const ca=g("surf")*g("pm")*fr,com=ca*g("com")/100,fraisRev=com,
+  acq=g("ach")*(1+g("enr")/100),int=g("int")*ft,ext=g("ext")*ft,moe=(int+ext)*g("moe")/100,ass=g("ass"),ale=(int+ext)*g("ale")/100,
+  trv=int+ext+moe+ass+ale,port=g("chg")+g("jur")+g("fin"),inv=acq+trv+port+fraisRev,m=ca-inv,fis=m>0?m*g("fis")/100:0;
+  return {ca,pm:g("pm")*fr,com,acq,int,ext,moe,ass,ale,trv,chg:g("chg"),jur:g("jur"),fin:g("fin"),port,inv,m,fis,mn:m-fis,ratio:inv?m/inv:0}});
+ const L=[["Revente"],["Prix de revente au m²","pm"],["Chiffre d'affaires total","ca"],["Commercialisation","com"],["Acquisition"],["Coût d'acquisition (frais inclus)","acq"],["Travaux"],["Rénovation intérieure","int"],["Travaux extérieurs","ext"],["Architecte / MOE","moe"],["Assurances / dommage ouvrage","ass"],["Aléas travaux","ale"],["Coût total des travaux","trv","tot"],["Portage"],["Charges non récupérables","chg"],["Frais juridiques et comptables","jur"],["Frais financiers","fin"],["Coût de portage","port","tot"],["Investissement total","inv","tot"],["Marge avant fiscalité","m","tot"],["Fiscalité estimée","fis"],["Marge nette","mn","tot"],["Marge / coût total","ratio","tot","p"]];
+ $("#bilan").innerHTML=`<tr><th>Poste</th>${sc.map(s=>`<th>${s[0]}</th>`).join("")}</tr>`+L.map(l=>l.length==1?`<tr class="sec"><td colspan="4">${l[0]}</td></tr>`:`<tr class="${l[2]||""}"><td>${l[0]}</td>${R.map(r=>`<td class="${l[1]=="m"||l[1]=="mn"?(r[l[1]]<0?"no":"go"):""}">${l[3]?pct(r[l[1]]):eur(r[l[1]])}</td>`).join("")}</tr>`).join("")}
+$$(".s").forEach(i=>i.oninput=bilan);bilan();
+
+/* Cadastre */
+function cerfa(){const v=i=>$("#"+i).value||"…";return `DEMANDE D'EXTRAIT DE MATRICE CADASTRALE (brouillon)\nFormulaire 6815-EM-SD\n\nDemandeur : ${v("c_nom")}\nAdresse : ${v("c_adr")}\nCourriel : ${v("c_mail")}\n\nSection cadastrale : ${v("c_sec")}\nParcelle n° : ${v("c_par")}\nObjet : ${$("#c_obj").value}\n\nÀ recopier sur le Cerfa officiel avant envoi.`}
+$("#cPrev").onclick=()=>{$("#cOut").hidden=false;$("#cOut").textContent=cerfa()};
+$("#cDl").onclick=()=>{try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([cerfa()],{type:"text/plain"}));a.download="brouillon-cerfa.txt";a.click()}catch(e){$("#cPrev").click()}};
+
+/* Dossiers */
+const STS=["Repéré","À contacter","Visite à organiser","Visité","À chiffrer","Offre à préparer","Offre envoyée","En négociation","Sous compromis","Acquis","Abandonné"];
+const TYPES=["Acte / compromis","Relevé de bien","Diagnostic immobilier","Devis travaux","Facture","Plan / cadastre","PLU / urbanisme","Permis de construire","Déclaration préalable","Copropriété / AG","Financement / banque","Fiscalité / comptabilité","Courrier mairie","Autre"];
+$("#k_st").innerHTML=STS.map(s=>`<option>${s}</option>`).join("");$("#k_type").innerHTML=TYPES.map(s=>`<option>${s}</option>`).join("");
+let dos=store.get("rd_dos",[]);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function renderDos(){$("#kList").innerHTML=dos.length?dos.map((d,i)=>`<div class="card"><div class="row" style="border:0;padding:0"><b>${esc(d.adr)}</b><button class="btn del" data-d="${i}">Supprimer</button></div><span class="pill">${esc(d.st)}</span><p class="note" style="margin:6px 0 0">Prochaine action : ${esc(d.next||"à définir")}</p>${(d.docs||[]).map(x=>`<div class="note">📄 ${esc(x.type)} — ${x.data?`<a href="${x.data}" download="${esc(x.name)}">${esc(x.name)}</a>`:esc(x.name)}</div>`).join("")}</div>`).join(""):`<div class="card note">Aucun dossier. Saisis une adresse pour commencer.</div>`}
+$("#kList").onclick=e=>{const i=e.target.dataset.d;if(i!=null&&confirm("Supprimer ce dossier ?")){dos.splice(+i,1);store.set("rd_dos",dos);renderDos()}};
+$("#kSave").onclick=()=>{const adr=$("#k_adr").value.trim();if(!adr){alert("Saisis l'adresse du bien.");return}
+ const f=$("#k_file").files[0];
+ const done=doc=>{let d=dos.find(x=>x.adr.toLowerCase()===adr.toLowerCase());if(!d){d={adr,docs:[]};dos.unshift(d)}d.st=$("#k_st").value;d.next=$("#k_next").value;if(doc)d.docs.push(doc);store.set("rd_dos",dos);renderDos();$("#k_file").value=""};
+ if(!f)return done(null);
+ if(f.size>700000){alert("Fichier trop lourd (700 Ko max).");return}
+ const r=new FileReader();r.onload=()=>done({type:$("#k_type").value,name:f.name,data:r.result});r.readAsDataURL(f)};
+$("#exp").onclick=()=>{const blob=new Blob([JSON.stringify({dossiers:dos,contacts:ct,communes:data},null,1)],{type:"application/json"});try{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="rendelys-export.json";a.click()}catch(e){alert("Export indisponible dans cet aperçu.")}};
+renderDos();
+
+/* Réseau */
+let ct=store.get("rd_ct",[]);
+function renderCt(){$("#rList").innerHTML=ct.length?ct.map((c,i)=>`<div class="card row" style="margin-bottom:8px"><span><b>${esc(c.nom)}</b><br><span class="note">${esc(c.met)} · ${esc(c.ct)}</span></span><button class="btn del" data-c="${i}">Supprimer</button></div>`).join(""):`<div class="card note">Aucun contact. Ajoute ton premier professionnel de confiance.</div>`}
+$("#rList").onclick=e=>{const i=e.target.dataset.c;if(i!=null){ct.splice(+i,1);store.set("rd_ct",ct);renderCt()}};
+$("#rAdd").onclick=()=>{const nom=$("#r_nom").value.trim();if(!nom)return;ct.push({nom,met:$("#r_met").value,ct:$("#r_ct").value});store.set("rd_ct",ct);$("#r_nom").value=$("#r_ct").value="";renderCt()};
+renderCt();
+</script><script>
+(()=>{const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const E={pop:null,rp:null,po:null,vac:null,nv:null,pm:null};let codes={},pops={};
+const st=m=>{$("#dvfStatus").textContent=m};
+const refresh=()=>{renderCom();renderVac();renderDvf();rank()};
+async function boot(){
+ try{const r=await fetch("/api/communes?dep=13,83");if(r.ok)(await r.json()).forEach(c=>{codes[norm(c.nom)]=c.code;pops[norm(c.nom)]=c.population})}catch(e){}
+ try{const r=await fetch("/insee.json");if(r.ok){const j=await r.json();for(const v in j)data[v]=Object.assign({},E,data[v]||{},j[v]);store.set("rd_com",data);refresh()}}catch(e){}}
+async function load(v){
+ const cs=v==="Marseille"?Array.from({length:16},(_,i)=>String(13201+i)):[codes[norm(v)]];
+ if(!cs[0])throw new Error("code INSEE introuvable");
+ const old=(dvf[v]&&dvf[v].rows)||[],seen=new Set(old.map(x=>x.id));let all=[...old],ok=0;
+ for(const c of cs){const r=await fetch("/api/dvf?code="+c+"&years=2023,2024,2025");if(!r.ok)continue;ok++;for(const x of (await r.json()).rows)if(!seen.has(x.id)){seen.add(x.id);all.push(x)}}
+ if(!ok)throw new Error("DVF indisponible");
+ all=all.sort((a,b)=>b.d.localeCompare(a.d)).slice(0,3000);
+ if(all.length){dvf[v]={rows:all};data[v]=Object.assign({},E,data[v]||{});data[v].pm=Math.round(med(all.map(r=>r.m)));if(data[v].pop==null&&pops[norm(v)])data[v].pop=pops[norm(v)]}
+ store.set("rd_dvf",dvf);store.set("rd_com",data);return all.length}
+$("#dvfAuto").onclick=async()=>{const v=$("#com").value;st("Chargement de "+v+"…");try{const n=await load(v);st(n+" ventes retenues pour "+v+".");refresh()}catch(e){st("Échec : "+e.message)}};
+$("#dvfAll").onclick=async()=>{let i=0,bad=[];for(const v of villes){st("Chargement "+(++i)+"/"+villes.length+" : "+v);try{await load(v)}catch(e){bad.push(v)}}refresh();st("Terminé."+(bad.length?" Échecs : "+bad.join(", "):""))};
+boot()})();
+</script></body></html>
